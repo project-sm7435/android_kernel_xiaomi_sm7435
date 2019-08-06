@@ -978,6 +978,9 @@ endif
 KBUILD_LDFLAGS += -mllvm -import-instr-limit=5
 endif
 
+# Set O3 optimization level for LTO
+KBUILD_LDFLAGS		+= --plugin-opt=O3
+
 ifdef CONFIG_LTO
 KBUILD_CFLAGS	+= $(CC_FLAGS_LTO)
 export CC_FLAGS_LTO
