@@ -128,6 +128,19 @@ static inline int which_bucket(u64 duration_ns)
 	return bucket + 5;
 }
 
+/*
+ * Return a multiplier for the exit latency that is intended
+ * to take performance requirements into account.
+ * The more performance critical we estimate the system
+ * to be, the higher this multiplier, and thus the higher
+ * the barrier to go to an expensive C state.
+ */
+static inline int performance_multiplier(unsigned long nr_iowaiters)
+{
+	/* for IO wait tasks (per cpu!) we add 10x each */
+	return 2 * nr_iowaiters;
+}
+
 static DEFINE_PER_CPU(struct menu_device, menu_devices);
 
 static void menu_update_intervals(struct menu_device *data, unsigned int interval_us)
