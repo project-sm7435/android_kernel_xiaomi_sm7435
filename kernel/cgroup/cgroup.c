@@ -5010,10 +5010,7 @@ static ssize_t cgroup_procs_write(struct kernfs_open_file *of,
 	if (!ret &&
 	    !memcmp(of->kn->parent->name, "top-app", sizeof("top-app")) &&
 	    task_is_zygote(task->parent) && kp_active_mode() != 1) {
-		if (kp_active_mode() == 3)
-			cpu_boost_max(500);
-		else
-			cpu_boost_max(250);
+		cpu_boost_max(500);
 	}
 
 out_finish:
