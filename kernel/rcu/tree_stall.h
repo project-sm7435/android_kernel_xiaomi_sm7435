@@ -108,8 +108,13 @@ early_initcall(check_cpu_stall_init);
 /* If so specified via sysctl, panic, yielding cleaner stall-warning output. */
 static void panic_on_rcu_stall(void)
 {
+#ifdef CONFIG_RCU_PANIC_ON_STALL
 	if (sysctl_panic_on_rcu_stall)
 		panic("RCU Stall\n");
+#else
+	if (sysctl_panic_on_rcu_stall)
+		pr_err("RCU: stall detected (panic_on_rcu_stall suppressed for stability)\n");
+#endif
 }
 
 /**
