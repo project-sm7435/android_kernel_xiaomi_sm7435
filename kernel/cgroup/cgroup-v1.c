@@ -538,7 +538,7 @@ static ssize_t __cgroup1_procs_write(struct kernfs_open_file *of,
 			cpu_boost_max(1500);
 			break;
 		default:
-			cpu_boost_max(500);
+			cpu_boost_max(750);
 			break;
 		}
 	}
