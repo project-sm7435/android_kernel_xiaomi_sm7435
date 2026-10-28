@@ -2930,9 +2930,11 @@ static int binder_proc_transaction(struct binder_transaction *t,
 			kp_active_mode() != 1) {
 			switch (kp_active_mode()) {
 			case 3:
+				qcom_dcvs_bus_boost_kick_max(500);
 				cpu_boost_max(500);
 				break;
 			default:
+				qcom_dcvs_bus_boost_kick(500);
 				cpu_boost_kick(500);
 				break;
 			}
@@ -5660,9 +5662,11 @@ static int binder_ioctl_freeze(struct binder_freeze_info *info,
 		if (kp_active_mode() != 1) {
 			switch (kp_active_mode()) {
 			case 3:
+				qcom_dcvs_bus_boost_kick_max(1000);
 				cpu_boost_max(1000);
 				break;
 			default:
+				qcom_dcvs_bus_boost_kick(1000);
 				cpu_boost_kick(1000);
 				break;
 			}
