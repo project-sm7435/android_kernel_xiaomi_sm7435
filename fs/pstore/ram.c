@@ -644,10 +644,15 @@ static int ramoops_parse_dt(struct platform_device *pdev,
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
+		struct resource r;
+
 		rmem = of_reserved_mem_lookup(of_node);
 		if (rmem) {
 			pdata->mem_size = rmem->size;
 			pdata->mem_address = rmem->base;
+		} else if (!of_address_to_resource(of_node, 0, &r)) {
+			pdata->mem_size = resource_size(&r);
+			pdata->mem_address = r.start;
 		} else {
 			dev_err(&pdev->dev,
 				"failed to locate DT /reserved-memory resource\n");
