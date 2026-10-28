@@ -2923,22 +2923,6 @@ static int binder_proc_transaction(struct binder_transaction *t,
 		binder_transaction_priority(thread->task, t, node_prio,
 					    node->inherit_rt);
 		binder_enqueue_thread_work_ilocked(thread, &t->work);
-
-		/* Boost for in-app activity transitions (sync txn to main thread of foreground app) */
-		if (thread->task == proc->tsk &&
-			READ_ONCE(proc->tsk->signal->oom_score_adj) == 0 &&
-			kp_active_mode() != 1) {
-			switch (kp_active_mode()) {
-			case 3:
-				qcom_dcvs_bus_boost_kick_max(500);
-				cpu_boost_max(500);
-				break;
-			default:
-				qcom_dcvs_bus_boost_kick(500);
-				cpu_boost_kick(500);
-				break;
-			}
-		}
 	} else if (!pending_async) {
 		trace_android_vh_binder_special_task(t, proc, thread,
 			&t->work, &proc->todo, !oneway, &enqueue_task);
