@@ -60,19 +60,6 @@ DEFINE_MUTEX(kp_set_mode_rb_lock);
 #define kp_err(fmt, ...)	pr_err(fmt, ##__VA_ARGS__)
 #define kp_info(fmt, ...)	pr_info(fmt, ##__VA_ARGS__)
 
-/*
- * Mapping:
- * - 0 -> 2 (kprofiles "disabled" behaves like mode 2 to in-kernel users)
- * - 1..3 unchanged
- */
-static __always_inline unsigned int kp_effective_mode(unsigned int stored)
-{
-	if (stored == 0)
-		return 2;
-
-	return stored;
-}
-
 static void kp_trigger_mode_change_event(void);
 
 static __always_inline int __kp_set_mode(unsigned int level)
@@ -168,29 +155,24 @@ EXPORT_SYMBOL_GPL(kp_set_mode);
  *     // Things to be done when performance profile is active
  *     break;
  * default:
- *     // Things to be done when kprofiles is disabled (forced to balanced in kernel)
+ *     // Things to be done when kprofiles is disabled
  *     break;
  * }
  */
 int kp_active_mode(void)
 {
-	unsigned int mode;
+	if (READ_ONCE(kp_override))
+		return READ_ONCE(kp_override_mode);
 
-	if (READ_ONCE(kp_override)) {
-		mode = READ_ONCE(kp_override_mode);
-		if (unlikely(mode > 3))
-			mode = 0;
-		return kp_effective_mode(mode);
-	}
-
-	mode = READ_ONCE(kp_mode);
-	if (unlikely(mode > 3)) {
+	if (unlikely(READ_ONCE(kp_mode) > 3)) {
 		WRITE_ONCE(kp_mode, 0);
+		kp_trigger_mode_change_event();
 		kp_err("Invalid value passed, falling back to level 0\n");
-		mode = 0;
 	}
+	if (READ_ONCE(kp_mode) == 0)
+		WRITE_ONCE(kp_mode, 2);
 
-	return kp_effective_mode(mode);
+	return READ_ONCE(kp_mode);
 }
 EXPORT_SYMBOL_GPL(kp_active_mode);
 
