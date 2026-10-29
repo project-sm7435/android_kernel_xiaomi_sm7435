@@ -1958,6 +1958,7 @@ static struct elevator_type mq_adios = {
 	},
 	.elevator_attrs = adios_sched_attrs,
 	.elevator_name = "adios",
+	.elevator_features = ELEVATOR_F_MQ_AWARE,
 	.elevator_owner = THIS_MODULE,
 };
 MODULE_ALIAS("mq-adios-iosched");
