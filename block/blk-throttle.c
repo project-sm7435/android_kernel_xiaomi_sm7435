@@ -14,6 +14,12 @@
 #include "blk-cgroup-rwstat.h"
 #include "blk-stat.h"
 #include "blk-throttle.h"
+#ifndef THROTL_GRP_QUANTUM
+#define THROTL_GRP_QUANTUM 8
+#endif
+#ifndef THROTL_QUANTUM
+#define THROTL_QUANTUM 32
+#endif
 
 /* Max dispatch from a group in 1 round */
 static int throtl_grp_quantum = 16;
